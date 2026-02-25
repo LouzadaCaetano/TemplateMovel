@@ -7,7 +7,7 @@ import { StatusIcon } from "../StatusIcon";
 
 
 type Props = TouchableOpacityProps & {
-    status: FileterStatus;
+    status: FilterStatus;
     isActive: boolean;
 }
 
@@ -17,7 +17,7 @@ export function Filter({ status, isActive, ...rest }: Props) {
         style={[styles.container, {opacity: isActive ? 1 : 0.5}]}
          {...rest}>
             <StatusIcon status={status} />
-            <Text style={styles.title}>{status === FileterStatus.PENDING ? "Pendentes" : "Comprados"}</Text>
+            <Text style={styles.title}>{status === FilterStatus.PENDING ? "Pendentes" : "Comprados"}</Text>
         </TouchableOpacity>
     );
 }   
