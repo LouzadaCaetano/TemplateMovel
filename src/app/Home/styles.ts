@@ -4,12 +4,7 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#d0d2d8',
-    alignItems: 'center',
     paddingTop: 70, 
-  },
-  logo: {
-    width: 134,
-    height: 34,
   },
   form: {
     width: '100%',
@@ -17,14 +12,27 @@ export const styles = StyleSheet.create({
     gap: 7,
     marginTop: 42,
   },
-  content: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#ffffff',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 24,
-    marginTop: 24,
-
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#0037a4',
+    textAlign: 'left',
+    paddingHorizontal: 16,
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+  },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8, // RN 0.70+ supports gap, dará espaçamento entre filhos
+  },
+  list: {
+    width: '100%',
+    paddingHorizontal: 16,
+    marginTop: 24,
+  }
 });
