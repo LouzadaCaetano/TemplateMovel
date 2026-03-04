@@ -1,12 +1,10 @@
-import { StyleSheet, View, Image, Text } from 'react-native';
+import { View, Text } from 'react-native';
 import { styles } from './styles';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
-import { Filter } from '@/components/Filter';
 import { Feather } from '@expo/vector-icons';
 import { BudgetCard } from '@/components/BudgetCard';
 import { Orcamento } from '@/types/ModeloOrcamento';
-import { StatusOrcamento } from '@/types/StatusOrcamento';
 
 
 export default function Home() {
