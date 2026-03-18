@@ -1,36 +1,29 @@
 import { ItemServico } from "./ItemServico";
 import { StatusOrcamento } from "./StatusOrcamento";
-// Representa o documento principal do sistema.
+
+// Dados principais de um orcamento.
 export interface Orcamento {
-
+  // Id do orcamento.
   id: string;
-  // Identificador único do orçamento.
-  // Usado para buscar, editar, duplicar ou remover.
 
+  // Nome do cliente.
   cliente: string;
-  // Nome do cliente que está solicitando o orçamento.
 
+  // Titulo exibido no card.
   titulo: string;
-  // Título ou descrição geral do orçamento.
-  // Exemplo: "Orçamento de Serviços de TI".
 
+  // Itens que compoem o orcamento.
   itens: ItemServico[];
-  // Lista de serviços incluídos no orçamento.
-  // Cada item segue o modelo ItemServico.
 
+  // Desconto aplicado ao total.
   percentualDesconto?: number;
-  // Percentual de desconto aplicado ao valor total.
-  // O símbolo "?" indica que é opcional.
-  // Exemplo: 10 significa 10% de desconto.
 
+  // Situacao atual do orcamento.
   status: StatusOrcamento;
-  // Situação atual do orçamento no ciclo de vendas.
 
+  // Data de criacao.
   dataCriacao: string;
-  // Data em que o orçamento foi criado.
-  // Armazenada como string para facilitar salvar no AsyncStorage.
 
+  // Data da ultima alteracao.
   dataAtualizacao: string;
-  // Data da última modificação do orçamento.
-  // Atualizada sempre que o usuário editar algo.
 }

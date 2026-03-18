@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
+    // Estilo base do campo de texto.
     container: {
         backgroundColor: '#ffffff',
         height: 48,

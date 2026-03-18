@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { StatusOrcamento } from '@/types/StatusOrcamento';
 
+// Cor do texto de cada status.
 export const statusStyles: Record<StatusOrcamento, object> = {
   Rascunho: { color: '#666' },
   Enviado: { color: '#003bb2' },
@@ -9,6 +10,7 @@ export const statusStyles: Record<StatusOrcamento, object> = {
 };
 
 export const styles = StyleSheet.create({
+  // Caixa principal do card.
   card: {
     backgroundColor: '#fff',
     padding: 16,
@@ -22,24 +24,29 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
   },
+  // Linha do titulo e status.
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  // Titulo do orcamento.
   title: {
     fontSize: 16,
     fontWeight: 'bold',
   },
+  // Nome do cliente.
   company: {
     fontSize: 14,
     color: '#666',
     marginTop: 4,
   },
+  // Texto do status.
   status: {
     fontSize: 12,
     fontWeight: '600',
   },
+  // Valor total do card.
   value: {
     fontSize: 18,
     fontWeight: '600',

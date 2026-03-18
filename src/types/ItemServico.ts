@@ -1,20 +1,14 @@
-// Representa cada serviço adicionado dentro de um orçamento.
+// Dados de um item de servico.
 export interface ItemServico {
-
+  // Id do item.
   id: string;
-  // Identificador único do item.
-  // Pode ser gerado com Date.now() ou uuid.
-  // Serve para diferenciar cada item na lista.
 
+  // Nome ou descricao do servico.
   descricao: string;
-  // Nome ou descrição do serviço prestado.
-  // Exemplo: "Instalação de sistema", "Manutenção preventiva".
 
+  // Quantidade usada no calculo.
   quantidade: number;
-  // Quantidade de vezes que o serviço será realizado.
-  // Exemplo: 2 instalações.
 
+  // Preco unitario do servico.
   precoUnitario: number;
-  // Valor unitário do serviço.
-  // Exemplo: 150.00 (valor em reais).
 }

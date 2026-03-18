@@ -1,7 +1,6 @@
-// Define os possíveis estados do orçamento no sistema.
-// Usamos um "type union" para limitar os valores permitidos.
+// Valores aceitos para o status do orcamento.
 export type StatusOrcamento =
-  | 'Rascunho'   // Orçamento ainda em edição
-  | 'Enviado'    // Orçamento enviado ao cliente
-  | 'Aprovado'   // Cliente aprovou o orçamento
-  | 'Recusado';  // Cliente recusou o orçamento
+  | 'Rascunho'
+  | 'Enviado'
+  | 'Aprovado'
+  | 'Recusado';
