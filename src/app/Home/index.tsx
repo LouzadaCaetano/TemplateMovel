@@ -1,15 +1,16 @@
-import { View, Text, FlatList } from 'react-native';
+import { FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Feather } from '@expo/vector-icons';
 import { styles } from './styles';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
-import { Feather } from '@expo/vector-icons';
 import { BudgetCard } from '@/components/BudgetCard';
 import { Orcamento } from '@/types/ModeloOrcamento';
-import React, { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// Chave usada para salvar os orcamentos no celular.
-const ORCAMENTOS_STORAGE_KEY = '@templatemovel:orcamentos';
+import {
+  STATUS_ORCAMENTO_OPTIONS,
+  StatusOrcamento,
+} from '@/types/StatusOrcamento';
+import { getAll, getByStatus, saveAll } from '@/storage/orcamentos';
 
 // Gera um id novo e evita repetir ids ja existentes.
 const createUniqueId = (prefix: string, existingIds: Set<string>) => {
@@ -28,28 +29,46 @@ const createUniqueId = (prefix: string, existingIds: Set<string>) => {
 };
 
 export default function Home() {
-    // Estados da tela.
-    const [orcamentos, setOrcamentos] = useState<Orcamento[]>([]);
-    const [titulo, setTitulo] = useState('');
-    const [cliente, setCliente] = useState('');
-    const [valorTotal, setValorTotal] = useState('');
-    const [isHydrated, setIsHydrated] = useState(false);
+  // Estados da tela.
+  const [todosOrcamentos, setTodosOrcamentos] = useState<Orcamento[]>([]);
+  const [orcamentosFiltrados, setOrcamentosFiltrados] = useState<Orcamento[]>([]);
+  const [statusFiltro, setStatusFiltro] = useState<StatusOrcamento>('Rascunho');
+  const [titulo, setTitulo] = useState('');
+  const [cliente, setCliente] = useState('');
+  const [valorTotal, setValorTotal] = useState('');
+  const [isHydrated, setIsHydrated] = useState(false);
 
-    // Converte o valor digitado para numero.
-    const parseValor = (value: string) => {
-      const normalized = value.replace(/\./g, '').replace(',', '.').trim();
-      const parsed = Number(normalized);
-      return Number.isFinite(parsed) ? parsed : 0;
-    };
+  // Converte o valor digitado para numero.
+  const parseValor = (value: string) => {
+    const normalized = value.replace(/\./g, '').replace(',', '.').trim();
+    const parsed = Number(normalized);
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
 
-    // Cria um novo orcamento e adiciona na lista.
-    const handleAdd = () => {
+  // Recarrega a lista de acordo com o status selecionado.
+  const refreshOrcamentosByStatus = async (
+    status: StatusOrcamento,
+    source: Orcamento[]
+  ) => {
+    try {
+      const filtered = await getByStatus(status, source);
+      setOrcamentosFiltrados(filtered);
+    } catch (error) {
+      console.error('Erro ao filtrar orcamentos por status:', error);
+    }
+  };
+
+  // Cria um novo orcamento e adiciona na lista.
+  const handleAdd = () => {
     const valor = parseValor(valorTotal);
+
     if (!titulo.trim() || !cliente.trim() || valor <= 0) return;
 
-    const existingOrcamentoIds = new Set(orcamentos.map((orcamento) => orcamento.id));
+    const existingOrcamentoIds = new Set(
+      todosOrcamentos.map((orcamento) => orcamento.id)
+    );
     const existingItemIds = new Set(
-      orcamentos.flatMap((orcamento) => orcamento.itens.map((item) => item.id))
+      todosOrcamentos.flatMap((orcamento) => orcamento.itens.map((item) => item.id))
     );
     const orcamentoId = createUniqueId('orcamento', existingOrcamentoIds);
     const itemId = createUniqueId('item', existingItemIds);
@@ -72,21 +91,19 @@ export default function Home() {
       dataAtualizacao: new Date().toISOString(),
     };
 
-    setOrcamentos(prev => [...prev, novo]);
+    setTodosOrcamentos((current) => [...current, novo]);
+
     setTitulo('');
     setCliente('');
     setValorTotal('');
   };
 
-  // Carrega os orcamentos salvos quando a tela abre.
+  // Carrega todos os orcamentos salvos quando a tela abre.
   useEffect(() => {
     const loadOrcamentos = async () => {
       try {
-        const stored = await AsyncStorage.getItem(ORCAMENTOS_STORAGE_KEY);
-        if (stored) {
-          const parsed = JSON.parse(stored) as Orcamento[];
-          setOrcamentos(parsed);
-        }
+        const storedOrcamentos = await getAll();
+        setTodosOrcamentos(storedOrcamentos);
       } catch (error) {
         console.error('Erro ao carregar orcamentos do AsyncStorage:', error);
       } finally {
@@ -97,35 +114,41 @@ export default function Home() {
     loadOrcamentos();
   }, []);
 
-  // Salva a lista sempre que ela muda.
+  // Salva a lista completa sempre que ela muda.
   useEffect(() => {
-    const saveOrcamentos = async () => {
+    const persistOrcamentos = async () => {
       try {
-        await AsyncStorage.setItem(
-          ORCAMENTOS_STORAGE_KEY,
-          JSON.stringify(orcamentos)
-        );
+        await saveAll(todosOrcamentos);
       } catch (error) {
         console.error('Erro ao salvar orcamentos no AsyncStorage:', error);
       }
     };
 
     if (isHydrated) {
-      saveOrcamentos();
+      persistOrcamentos();
     }
-  }, [orcamentos, isHydrated]);
+  }, [todosOrcamentos, isHydrated]);
+
+  // Atualiza a listagem sempre que o filtro muda.
+  useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
+    refreshOrcamentosByStatus(statusFiltro, todosOrcamentos);
+  }, [statusFiltro, todosOrcamentos, isHydrated]);
 
   return (
     <View style={styles.container}>
       {/* Cabecalho da tela. */}
       <View style={styles.header}>
-        <Text style={styles.title}>Orçamentos</Text>
+        <Text style={styles.title}>Orcamentos</Text>
       </View>
 
       {/* Formulario para criar um novo orcamento. */}
       <View style={styles.newForm}>
         <Input
-          placeholder="Título do orçamento"
+          placeholder="Titulo do orcamento"
           value={titulo}
           onChangeText={setTitulo}
         />
@@ -135,7 +158,7 @@ export default function Home() {
           onChangeText={setCliente}
         />
         <Input
-          placeholder="Valor do orçamento total"
+          placeholder="Valor do orcamento total"
           value={valorTotal}
           onChangeText={setValorTotal}
           keyboardType="decimal-pad"
@@ -147,22 +170,50 @@ export default function Home() {
       {/* Barra de busca e filtro. */}
       <View style={styles.form}>
         <View style={styles.searchRow}>
-          <Input placeholder="Título ou cliente..." />
-          <Button
-            icon={<Feather name="filter" size={20} color="#fff" />}
-          />
+          <Input placeholder="Titulo ou cliente..." />
+          <Button icon={<Feather name="filter" size={20} color="#fff" />} />
         </View>
+
+        {/* Filtro por status da listagem. */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filterList}
+        >
+          {STATUS_ORCAMENTO_OPTIONS.map((status) => {
+            const isSelected = status === statusFiltro;
+
+            return (
+              <TouchableOpacity
+                key={status}
+                style={[
+                  styles.filterButton,
+                  isSelected && styles.filterButtonSelected,
+                ]}
+                onPress={() => setStatusFiltro(status)}
+              >
+                <Text
+                  style={[
+                    styles.filterButtonText,
+                    isSelected && styles.filterButtonTextSelected,
+                  ]}
+                >
+                  {status}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </View>
 
       {/* Lista de orcamentos adicionados. */}
       <FlatList
-        data={orcamentos}
+        data={orcamentosFiltrados}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <BudgetCard orcamento={item} />}
         style={styles.listContainer}
         contentContainerStyle={styles.listContent}
       />
-
     </View>
   );
 }

@@ -35,6 +35,32 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8, 
   },
+  // Linha horizontal dos filtros de status.
+  filterList: {
+    gap: 8,
+    paddingTop: 12,
+  },
+  // Botao base de cada filtro.
+  filterButton: {
+    backgroundColor: '#ffffff',
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
+  // Destaque do filtro selecionado.
+  filterButtonSelected: {
+    backgroundColor: '#2c46b1',
+  },
+  // Texto do filtro.
+  filterButtonText: {
+    color: '#2c46b1',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  // Texto do filtro ativo.
+  filterButtonTextSelected: {
+    color: '#ffffff',
+  },
   // Area visivel da lista.
   listContainer: {
     flex: 1,
