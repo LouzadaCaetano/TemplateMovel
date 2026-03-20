@@ -1,6 +1,5 @@
-import { FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { Feather } from '@expo/vector-icons';
 import { styles } from './styles';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
@@ -10,7 +9,14 @@ import {
   STATUS_ORCAMENTO_OPTIONS,
   StatusOrcamento,
 } from '@/types/StatusOrcamento';
-import { getAll, getByStatus, saveAll } from '@/storage/orcamentos';
+import {
+  add as addOrcamento,
+  clear as clearOrcamentos,
+  getAll,
+  getByStatus,
+  remove as removeOrcamento,
+  updateStatus as updateOrcamentoStatus,
+} from '@/storage/orcamentos';
 
 // Gera um id novo e evita repetir ids ja existentes.
 const createUniqueId = (prefix: string, existingIds: Set<string>) => {
@@ -45,21 +51,41 @@ export default function Home() {
     return Number.isFinite(parsed) ? parsed : 0;
   };
 
-  // Recarrega a lista de acordo com o status selecionado.
-  const refreshOrcamentosByStatus = async (
+  // Carrega todos os orcamentos persistidos.
+  const loadAllOrcamentos = async (source?: Orcamento[]) => {
+    const data = source ?? await getAll();
+    setTodosOrcamentos(data);
+
+    return data;
+  };
+
+  // Carrega a lista filtrada pelo status atual.
+  const loadOrcamentosByStatus = async (
     status: StatusOrcamento,
-    source: Orcamento[]
+    source?: Orcamento[]
   ) => {
-    try {
-      const filtered = await getByStatus(status, source);
-      setOrcamentosFiltrados(filtered);
-    } catch (error) {
-      console.error('Erro ao filtrar orcamentos por status:', error);
+    const data = await getByStatus(status, source);
+    setOrcamentosFiltrados(data);
+
+    return data;
+  };
+
+  // Sincroniza estado local e lista filtrada depois da persistencia.
+  const syncOrcamentosState = async (
+    updatedOrcamentos: Orcamento[],
+    nextStatusFiltro = statusFiltro
+  ) => {
+    setTodosOrcamentos(updatedOrcamentos);
+
+    if (nextStatusFiltro !== statusFiltro) {
+      setStatusFiltro(nextStatusFiltro);
     }
+
+    await loadOrcamentosByStatus(nextStatusFiltro, updatedOrcamentos);
   };
 
   // Cria um novo orcamento e adiciona na lista.
-  const handleAdd = () => {
+  const handleAdd = async () => {
     const valor = parseValor(valorTotal);
 
     if (!titulo.trim() || !cliente.trim() || valor <= 0) return;
@@ -91,58 +117,181 @@ export default function Home() {
       dataAtualizacao: new Date().toISOString(),
     };
 
-    setTodosOrcamentos((current) => [...current, novo]);
+    try {
+      const updatedOrcamentos = await addOrcamento(novo, todosOrcamentos);
 
-    setTitulo('');
-    setCliente('');
-    setValorTotal('');
+      await syncOrcamentosState(updatedOrcamentos, 'Rascunho');
+
+      setTitulo('');
+      setCliente('');
+      setValorTotal('');
+
+      Alert.alert(
+        'Orcamento criado',
+        'O novo orcamento foi salvo com status Rascunho.'
+      );
+    } catch (error) {
+      console.error('Erro ao criar orcamento:', error);
+      Alert.alert(
+        'Erro ao salvar',
+        'Nao foi possivel salvar o novo orcamento.'
+      );
+    }
+  };
+
+  // Executa a exclusao do orcamento.
+  const onRemove = async (id: string) => {
+    try {
+      const updatedOrcamentos = await removeOrcamento(id, todosOrcamentos);
+
+      await syncOrcamentosState(updatedOrcamentos);
+
+      Alert.alert(
+        'Orcamento excluido',
+        'O orcamento foi removido com sucesso.'
+      );
+    } catch (error) {
+      console.error('Erro ao excluir orcamento:', error);
+      Alert.alert(
+        'Erro ao excluir',
+        'Nao foi possivel remover o orcamento.'
+      );
+    }
+  };
+
+  // Atualiza o status do orcamento.
+  const handleUpdateStatus = async (
+    id: string,
+    newStatus: StatusOrcamento
+  ) => {
+    try {
+      const updatedOrcamentos = await updateOrcamentoStatus(
+        id,
+        newStatus,
+        todosOrcamentos
+      );
+
+      await syncOrcamentosState(updatedOrcamentos);
+
+      Alert.alert(
+        'Status atualizado',
+        `O orcamento agora esta como ${newStatus}.`
+      );
+    } catch (error) {
+      console.error('Erro ao atualizar status do orcamento:', error);
+      Alert.alert(
+        'Erro ao atualizar',
+        'Nao foi possivel atualizar o status do orcamento.'
+      );
+    }
+  };
+
+  // Abre a confirmacao antes da exclusao.
+  const handleRemove = (id: string) => {
+    Alert.alert(
+      'Excluir orcamento',
+      'Tem certeza que deseja excluir este orcamento?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: () => {
+            void onRemove(id);
+          },
+        },
+      ]
+    );
+  };
+
+  // Executa a limpeza completa da lista.
+  const onClear = async () => {
+    try {
+      await clearOrcamentos();
+      await syncOrcamentosState([]);
+
+      Alert.alert(
+        'Lista limpa',
+        'Todos os orcamentos foram removidos.'
+      );
+    } catch (error) {
+      console.error('Erro ao limpar orcamentos:', error);
+      Alert.alert(
+        'Erro ao limpar',
+        'Nao foi possivel limpar a lista de orcamentos.'
+      );
+    }
+  };
+
+  // Abre a confirmacao antes de limpar tudo.
+  const handleClear = () => {
+    if (!todosOrcamentos.length) {
+      Alert.alert(
+        'Lista vazia',
+        'Nao ha orcamentos para remover.'
+      );
+      return;
+    }
+
+    Alert.alert(
+      'Limpar lista',
+      'Tem certeza que deseja remover todos os orcamentos?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Limpar',
+          style: 'destructive',
+          onPress: () => {
+            void onClear();
+          },
+        },
+      ]
+    );
   };
 
   // Carrega todos os orcamentos salvos quando a tela abre.
   useEffect(() => {
-    const loadOrcamentos = async () => {
+    const loadInitialData = async () => {
       try {
-        const storedOrcamentos = await getAll();
-        setTodosOrcamentos(storedOrcamentos);
+        const storedOrcamentos = await loadAllOrcamentos();
+        await loadOrcamentosByStatus(statusFiltro, storedOrcamentos);
       } catch (error) {
         console.error('Erro ao carregar orcamentos do AsyncStorage:', error);
+        Alert.alert(
+          'Erro ao carregar',
+          'Nao foi possivel carregar os orcamentos salvos.'
+        );
       } finally {
         setIsHydrated(true);
       }
     };
 
-    loadOrcamentos();
+    void loadInitialData();
   }, []);
 
-  // Salva a lista completa sempre que ela muda.
-  useEffect(() => {
-    const persistOrcamentos = async () => {
-      try {
-        await saveAll(todosOrcamentos);
-      } catch (error) {
-        console.error('Erro ao salvar orcamentos no AsyncStorage:', error);
-      }
-    };
-
-    if (isHydrated) {
-      persistOrcamentos();
-    }
-  }, [todosOrcamentos, isHydrated]);
-
-  // Atualiza a listagem sempre que o filtro muda.
+  // Recarrega a lista filtrada sempre que o filtro muda.
   useEffect(() => {
     if (!isHydrated) {
       return;
     }
 
-    refreshOrcamentosByStatus(statusFiltro, todosOrcamentos);
-  }, [statusFiltro, todosOrcamentos, isHydrated]);
+    void loadOrcamentosByStatus(statusFiltro);
+  }, [statusFiltro, isHydrated]);
 
   return (
     <View style={styles.container}>
       {/* Cabecalho da tela. */}
       <View style={styles.header}>
         <Text style={styles.title}>Orcamentos</Text>
+        <TouchableOpacity onPress={handleClear}>
+          <Text style={styles.clearAction}>Limpar lista</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Formulario para criar um novo orcamento. */}
@@ -164,14 +313,13 @@ export default function Home() {
           keyboardType="decimal-pad"
         />
 
-        <Button title="Adicionar" onPress={handleAdd} />
+        <Button title="Adicionar" onPress={() => void handleAdd()} />
       </View>
 
       {/* Barra de busca e filtro. */}
       <View style={styles.form}>
         <View style={styles.searchRow}>
           <Input placeholder="Titulo ou cliente..." />
-          <Button icon={<Feather name="filter" size={20} color="#fff" />} />
         </View>
 
         {/* Filtro por status da listagem. */}
@@ -210,7 +358,15 @@ export default function Home() {
       <FlatList
         data={orcamentosFiltrados}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <BudgetCard orcamento={item} />}
+        renderItem={({ item }) => (
+          <BudgetCard
+            orcamento={item}
+            onRemove={() => handleRemove(item.id)}
+            onUpdateStatus={(newStatus) => {
+              void handleUpdateStatus(item.id, newStatus);
+            }}
+          />
+        )}
         style={styles.listContainer}
         contentContainerStyle={styles.listContent}
       />

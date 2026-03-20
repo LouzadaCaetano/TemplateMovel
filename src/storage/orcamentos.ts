@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Orcamento } from '@/types/ModeloOrcamento';
-import { StatusOrcamento } from '@/types/StatusOrcamento';
+import { canUpdateStatus, StatusOrcamento } from '@/types/StatusOrcamento';
 
 // Chave usada para salvar os orcamentos no celular.
 const ORCAMENTOS_STORAGE_KEY = '@templatemovel:orcamentos';
@@ -32,4 +32,71 @@ export async function saveAll(orcamentos: Orcamento[]): Promise<void> {
     ORCAMENTOS_STORAGE_KEY,
     JSON.stringify(orcamentos)
   );
+}
+
+// Adiciona um novo orcamento na lista persistida.
+export async function add(
+  orcamento: Orcamento,
+  source?: Orcamento[]
+): Promise<Orcamento[]> {
+  const orcamentos = source ?? await getAll();
+  const updatedOrcamentos = [...orcamentos, orcamento];
+
+  await saveAll(updatedOrcamentos);
+
+  return updatedOrcamentos;
+}
+
+// Remove um orcamento pelo id.
+export async function remove(
+  id: string,
+  source?: Orcamento[]
+): Promise<Orcamento[]> {
+  const orcamentos = source ?? await getAll();
+  const updatedOrcamentos = orcamentos.filter((item) => item.id !== id);
+
+  await saveAll(updatedOrcamentos);
+
+  return updatedOrcamentos;
+}
+
+// Limpa todos os orcamentos salvos.
+export async function clear(): Promise<void> {
+  await AsyncStorage.removeItem(ORCAMENTOS_STORAGE_KEY);
+}
+
+// Atualiza o status de um orcamento pelo id.
+export async function updateStatus(
+  id: string,
+  newStatus: StatusOrcamento,
+  source?: Orcamento[]
+): Promise<Orcamento[]> {
+  const orcamentos = source ?? await getAll();
+  let itemEncontrado = false;
+
+  const updatedOrcamentos = orcamentos.map((item) => {
+    if (item.id !== id) {
+      return item;
+    }
+
+    itemEncontrado = true;
+
+    if (!canUpdateStatus(item.status, newStatus)) {
+      throw new Error('INVALID_STATUS_TRANSITION');
+    }
+
+    return {
+      ...item,
+      status: newStatus,
+      dataAtualizacao: new Date().toISOString(),
+    };
+  });
+
+  if (!itemEncontrado) {
+    throw new Error('ORCAMENTO_NOT_FOUND');
+  }
+
+  await saveAll(updatedOrcamentos);
+
+  return updatedOrcamentos;
 }

@@ -29,16 +29,25 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
   },
+  // Acao para limpar todos os orcamentos.
+  clearAction: {
+    color: '#b70101',
+    fontSize: 14,
+    fontWeight: '600',
+  },
   // Linha que junta campo de busca e botao.
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 8, 
   },
   // Linha horizontal dos filtros de status.
   filterList: {
+    flexGrow: 1,
     gap: 8,
     paddingTop: 12,
+    justifyContent: 'center',
   },
   // Botao base de cada filtro.
   filterButton: {
