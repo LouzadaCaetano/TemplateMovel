@@ -3,29 +3,25 @@ import {
   Alert,
   FlatList,
   SafeAreaView,
-  ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { Button } from '@/components/Button';
 import { BudgetCard } from '@/components/BudgetCard';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
+import { FilterModal } from '@/components/FilterModal';
 import { Input } from '@/components/Input';
 import {
-  ORDENACAO_OPTIONS,
   OrdenacaoOrcamento,
-  STATUS_FILTRO_OPTIONS,
   StatusFiltroOrcamento,
 } from '@/types/OrcamentoFiltro';
 import { Orcamento } from '@/types/ModeloOrcamento';
-import { StatusOrcamento } from '@/types/StatusOrcamento';
 import {
   add as addOrcamento,
   clear as clearOrcamentos,
   getAll,
-  remove as removeOrcamento,
-  updateStatus as updateOrcamentoStatus,
 } from '@/storage/orcamentos';
 import {
   applyOrcamentoFilters,
@@ -37,6 +33,7 @@ interface Props {
   reloadSignal?: number;
   onCreate: () => void;
   onEdit: (orcamentoId: string) => void;
+  onOpenDetails: (orcamentoId: string) => void;
 }
 
 type ConfirmationState = {
@@ -61,6 +58,7 @@ export default function Home({
   reloadSignal = 0,
   onCreate,
   onEdit,
+  onOpenDetails,
 }: Props) {
   const [todosOrcamentos, setTodosOrcamentos] = useState<Orcamento[]>([]);
   const [busca, setBusca] = useState('');
@@ -68,7 +66,12 @@ export default function Home({
     useState<StatusFiltroOrcamento>('Todos');
   const [ordenacao, setOrdenacao] =
     useState<OrdenacaoOrcamento>('maisRecentes');
+  const [draftStatusFiltro, setDraftStatusFiltro] =
+    useState<StatusFiltroOrcamento>('Todos');
+  const [draftOrdenacao, setDraftOrdenacao] =
+    useState<OrdenacaoOrcamento>('maisRecentes');
   const [isLoading, setIsLoading] = useState(true);
+  const [showFilterModal, setShowFilterModal] = useState(false);
   const [confirmation, setConfirmation] =
     useState<ConfirmationState>(DEFAULT_CONFIRMATION);
 
@@ -110,33 +113,6 @@ export default function Home({
     });
   };
 
-  const handleRemove = (id: string) => {
-    openConfirmation({
-      title: 'Excluir orcamento',
-      message: 'Tem certeza que deseja excluir este orcamento?',
-      confirmLabel: 'Excluir',
-      destructive: true,
-      onConfirm: () => {
-        void (async () => {
-          try {
-            const updatedOrcamentos = await removeOrcamento(id, todosOrcamentos);
-            setTodosOrcamentos(updatedOrcamentos);
-            Alert.alert(
-              'Orcamento excluido',
-              'O orcamento foi removido com sucesso.'
-            );
-          } catch (error) {
-            console.error('Erro ao excluir orcamento:', error);
-            Alert.alert(
-              'Erro ao excluir',
-              'Nao foi possivel remover o orcamento.'
-            );
-          }
-        })();
-      },
-    });
-  };
-
   const handleDuplicate = async (id: string) => {
     const selectedOrcamento = todosOrcamentos.find((item) => item.id === id);
 
@@ -174,37 +150,6 @@ export default function Home({
     }
   };
 
-  const handleUpdateStatus = (id: string, newStatus: StatusOrcamento) => {
-    openConfirmation({
-      title: 'Alterar status',
-      message: `Deseja realmente mudar o orcamento para ${newStatus}?`,
-      confirmLabel: 'Confirmar',
-      onConfirm: () => {
-        void (async () => {
-          try {
-            const updatedOrcamentos = await updateOrcamentoStatus(
-              id,
-              newStatus,
-              todosOrcamentos
-            );
-
-            setTodosOrcamentos(updatedOrcamentos);
-            Alert.alert(
-              'Status atualizado',
-              `O orcamento agora esta como ${newStatus}.`
-            );
-          } catch (error) {
-            console.error('Erro ao atualizar status do orcamento:', error);
-            Alert.alert(
-              'Erro ao atualizar',
-              'Nao foi possivel atualizar o status do orcamento.'
-            );
-          }
-        })();
-      },
-    });
-  };
-
   const handleClear = () => {
     if (!todosOrcamentos.length) {
       Alert.alert('Lista vazia', 'Nao ha orcamentos para remover.');
@@ -237,92 +182,93 @@ export default function Home({
     });
   };
 
+  const handleOpenFilters = () => {
+    setDraftStatusFiltro(statusFiltro);
+    setDraftOrdenacao(ordenacao);
+    setShowFilterModal(true);
+  };
+
+  const handleApplyFilters = () => {
+    setStatusFiltro(draftStatusFiltro);
+    setOrdenacao(draftOrdenacao);
+    setShowFilterModal(false);
+  };
+
+  const handleResetFilters = () => {
+    setDraftStatusFiltro('Todos');
+    setDraftOrdenacao('maisRecentes');
+  };
+
+  const filtrosResumo = [
+    statusFiltro !== 'Todos' ? `Status: ${statusFiltro}` : null,
+    ordenacao !== 'maisRecentes'
+      ? `Ordenacao: ${
+          ordenacao === 'maisAntigos'
+            ? 'Mais antigos'
+            : ordenacao === 'maiorValor'
+              ? 'Maior valor'
+              : ordenacao === 'menorValor'
+                ? 'Menor valor'
+                : ordenacao === 'titulo'
+                  ? 'Titulo'
+                  : 'Cliente'
+        }`
+      : null,
+  ]
+    .filter(Boolean)
+    .join(' • ');
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerText}>
           <Text style={styles.title}>Orcamentos</Text>
           <Text style={styles.subtitle}>
-            Liste, filtre, duplique e edite seus orcamentos.
+            {`${todosOrcamentos.length} orcamento(s) salvos para acompanhar clientes, status e investimento.`}
           </Text>
         </View>
-        <TouchableOpacity onPress={handleClear}>
-          <Text style={styles.clearAction}>Limpar lista</Text>
-        </TouchableOpacity>
+        <Button title="Novo" onPress={onCreate} />
       </View>
 
-      <View style={styles.toolbar}>
-        <Button title="Novo orcamento" onPress={onCreate} fullWidth />
+      <View style={styles.searchSection}>
+        <View style={styles.searchRow}>
+          <View style={styles.searchField}>
+            <Input
+              placeholder="Buscar por titulo ou cliente"
+              value={busca}
+              onChangeText={setBusca}
+            />
+          </View>
+          <TouchableOpacity
+            style={styles.filterIconButton}
+            onPress={handleOpenFilters}
+          >
+            <Feather name="sliders" size={18} color="#163db5" />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.toolbarRow}>
+          <View style={styles.toolbarInfo}>
+            <Text style={styles.toolbarTitle}>Lista de orcamentos</Text>
+            <Text style={styles.toolbarSubtitle}>
+              {filtrosResumo || 'Sem filtros adicionais. Ordenando por mais recentes.'}
+            </Text>
+          </View>
+          <TouchableOpacity onPress={handleClear}>
+            <Text style={styles.clearAction}>Limpar</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.filtersSection}>
-        <Input
-          placeholder="Buscar por titulo ou cliente"
-          value={busca}
-          onChangeText={setBusca}
-        />
-
-        <Text style={styles.filterLabel}>Status</Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipsList}
-        >
-          {STATUS_FILTRO_OPTIONS.map((status) => {
-            const isSelected = status === statusFiltro;
-
-            return (
-              <TouchableOpacity
-                key={status}
-                style={[
-                  styles.filterButton,
-                  isSelected && styles.filterButtonSelected,
-                ]}
-                onPress={() => setStatusFiltro(status)}
-              >
-                <Text
-                  style={[
-                    styles.filterButtonText,
-                    isSelected && styles.filterButtonTextSelected,
-                  ]}
-                >
-                  {status}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-
-        <Text style={styles.filterLabel}>Ordenacao</Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipsList}
-        >
-          {ORDENACAO_OPTIONS.map((option) => {
-            const isSelected = option.value === ordenacao;
-
-            return (
-              <TouchableOpacity
-                key={option.value}
-                style={[
-                  styles.filterButton,
-                  isSelected && styles.filterButtonSelected,
-                ]}
-                onPress={() => setOrdenacao(option.value)}
-              >
-                <Text
-                  style={[
-                    styles.filterButtonText,
-                    isSelected && styles.filterButtonTextSelected,
-                  ]}
-                >
-                  {option.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
+        {statusFiltro !== 'Todos' || ordenacao !== 'maisRecentes' ? (
+          <View style={styles.activeFiltersCard}>
+            <Text style={styles.activeFiltersTitle}>Filtros aplicados</Text>
+            <Text style={styles.activeFiltersText}>
+              {filtrosResumo || 'Sem filtros ativos.'}
+            </Text>
+          </View>
+        ) : null}
       </View>
 
       <FlatList
@@ -331,10 +277,9 @@ export default function Home({
         renderItem={({ item }) => (
           <BudgetCard
             orcamento={item}
+            onPress={() => onOpenDetails(item.id)}
             onEdit={() => onEdit(item.id)}
             onDuplicate={() => void handleDuplicate(item.id)}
-            onRemove={() => handleRemove(item.id)}
-            onUpdateStatus={(newStatus) => handleUpdateStatus(item.id, newStatus)}
           />
         )}
         style={styles.listContainer}
@@ -365,6 +310,17 @@ export default function Home({
           closeConfirmation();
           currentAction();
         }}
+      />
+
+      <FilterModal
+        visible={showFilterModal}
+        selectedStatus={draftStatusFiltro}
+        selectedOrdenacao={draftOrdenacao}
+        onSelectStatus={setDraftStatusFiltro}
+        onSelectOrdenacao={setDraftOrdenacao}
+        onReset={handleResetFilters}
+        onApply={handleApplyFilters}
+        onClose={() => setShowFilterModal(false)}
       />
     </SafeAreaView>
   );

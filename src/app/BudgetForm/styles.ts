@@ -60,11 +60,19 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#1d2747',
   },
+  sectionDescription: {
+    color: '#5b6478',
+    lineHeight: 20,
+  },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: 12,
+  },
+  sectionHeaderText: {
+    flex: 1,
+    gap: 4,
   },
   statusList: {
     flexDirection: 'row',
@@ -83,43 +91,6 @@ export const styles = StyleSheet.create({
   },
   servicesList: {
     gap: 12,
-  },
-  summaryCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 14,
-    padding: 14,
-    gap: 12,
-    borderWidth: 1,
-    borderColor: '#d8dfef',
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  summaryRowHighlight: {
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#e4e9f3',
-  },
-  summaryLabel: {
-    color: '#4f5872',
-    fontSize: 14,
-  },
-  summaryValue: {
-    color: '#1d2747',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  summaryHighlightLabel: {
-    color: '#1d2747',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  summaryHighlightValue: {
-    color: '#163db5',
-    fontSize: 20,
-    fontWeight: '700',
   },
   footer: {
     flexDirection: 'row',

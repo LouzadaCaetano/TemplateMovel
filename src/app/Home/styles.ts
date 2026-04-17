@@ -36,59 +36,78 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-  toolbar: {
+  searchSection: {
     paddingHorizontal: 20,
     paddingTop: 20,
+    gap: 14,
   },
-  filtersSection: {
-    paddingHorizontal: 20,
-    paddingTop: 18,
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
   },
-  filterLabel: {
-    color: '#1d2747',
-    fontSize: 14,
-    fontWeight: '700',
+  searchField: {
+    flex: 1,
   },
-  // Linha horizontal dos filtros de status.
-  chipsList: {
-    flexGrow: 1,
-    gap: 8,
-    paddingBottom: 4,
-  },
-  // Botao base de cada filtro.
-  filterButton: {
+  filterIconButton: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
     backgroundColor: '#ffffff',
-    borderRadius: 999,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: '#d8dfef',
   },
-  // Destaque do filtro selecionado.
-  filterButtonSelected: {
-    backgroundColor: '#2c46b1',
-    borderColor: '#2c46b1',
+  toolbarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
   },
-  // Texto do filtro.
-  filterButtonText: {
-    color: '#2c46b1',
+  toolbarInfo: {
+    flex: 1,
+    gap: 4,
+  },
+  toolbarTitle: {
+    color: '#1d2747',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  toolbarSubtitle: {
+    color: '#4f5872',
+    lineHeight: 20,
+  },
+  filtersSection: {
+    paddingHorizontal: 20,
+    paddingTop: 4,
+  },
+  activeFiltersCard: {
+    backgroundColor: '#f7f9fc',
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#dfe5f1',
+    padding: 16,
+    gap: 6,
+  },
+  activeFiltersTitle: {
+    color: '#1d2747',
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
   },
-  // Texto do filtro ativo.
-  filterButtonTextSelected: {
-    color: '#ffffff',
+  activeFiltersText: {
+    color: '#4f5872',
+    lineHeight: 20,
   },
   // Area visivel da lista.
   listContainer: {
     flex: 1,
     width: '100%',
-    marginTop: 16,
+    marginTop: 14,
   },
   // Espacamento interno da lista.
   listContent: {
-    paddingTop: 4,
+    paddingTop: 8,
     paddingBottom: 28,
     paddingHorizontal: 20,
   },

@@ -5,9 +5,8 @@ export const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     padding: 16,
-    borderRadius: 8,
-    marginBottom: 12,
-    position: 'relative',
+    borderRadius: 20,
+    marginBottom: 14,
     // sombra Android
     elevation: 3,
     // sombra iOS
@@ -15,41 +14,46 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
+    borderWidth: 1,
+    borderColor: '#dbe2ef',
   },
   // Linha do titulo e status.
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingRight: 32,
+    alignItems: 'flex-start',
+    gap: 12,
   },
-  // Botao de exclusao do card.
-  removeButton: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    zIndex: 1,
-    padding: 4,
+  titleBlock: {
+    flex: 1,
+    gap: 6,
   },
   // Titulo do orcamento.
   title: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#1d2747',
-    flex: 1,
-    paddingRight: 12,
   },
   // Nome do cliente.
   company: {
     fontSize: 14,
     color: '#5b6478',
-    marginTop: 4,
+  },
+  valueRow: {
+    marginTop: 18,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  valueLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#7b859d',
   },
   // Valor total do card.
   value: {
     fontSize: 20,
     fontWeight: '700',
-    marginTop: 8,
     color: '#163db5',
   },
   // Acoes secundarias como editar e duplicar.
@@ -57,6 +61,9 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     marginTop: 14,
+    paddingTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: '#ecf0f6',
   },
   secondaryActionButton: {
     flexDirection: 'row',
@@ -70,37 +77,6 @@ export const styles = StyleSheet.create({
   secondaryActionText: {
     color: '#2c46b1',
     fontSize: 13,
-    fontWeight: '600',
-  },
-  // Linha das acoes de status.
-  actionsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 12,
-  },
-  // Botao pequeno de acao no card.
-  statusActionButton: {
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  // Botao para enviar.
-  sendButton: {
-    backgroundColor: '#003bb2',
-  },
-  // Botao para aprovar.
-  approveButton: {
-    backgroundColor: '#00a650',
-  },
-  // Botao para recusar.
-  rejectButton: {
-    backgroundColor: '#b70101',
-  },
-  // Texto das acoes.
-  statusActionText: {
-    color: '#ffffff',
-    fontSize: 12,
     fontWeight: '600',
   },
 });

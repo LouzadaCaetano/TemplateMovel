@@ -15,6 +15,7 @@ import {
   ServiceItemRow,
 } from '@/components/ServiceItemRow';
 import { StatusBadge } from '@/components/StatusBadge';
+import { SummaryBlock } from '@/components/SummaryBlock';
 import { add, getAll, update } from '@/storage/orcamentos';
 import { ItemServico } from '@/types/ItemServico';
 import { Orcamento } from '@/types/ModeloOrcamento';
@@ -27,7 +28,6 @@ import {
   calculateSubtotal,
   calculateTotal,
   createUniqueId,
-  formatCurrency,
   parseCurrencyValue,
 } from '@/utils/orcamentos';
 import { styles } from './styles';
@@ -302,7 +302,10 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Dados principais</Text>
+          <Text style={styles.sectionTitle}>Informacoes gerais</Text>
+          <Text style={styles.sectionDescription}>
+            Defina os dados basicos para identificar este orcamento.
+          </Text>
           <Input
             label="Titulo"
             placeholder="Ex.: Orcamento de manutencao"
@@ -319,6 +322,9 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Status</Text>
+          <Text style={styles.sectionDescription}>
+            Escolha como este orcamento deve aparecer na listagem.
+          </Text>
           <View style={styles.statusList}>
             {STATUS_ORCAMENTO_OPTIONS.map((statusOption) => {
               const isSelected = statusOption === status;
@@ -341,7 +347,12 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Servicos</Text>
+            <View style={styles.sectionHeaderText}>
+              <Text style={styles.sectionTitle}>Servicos incluidos</Text>
+              <Text style={styles.sectionDescription}>
+                Adicione todos os itens que entram no orcamento.
+              </Text>
+            </View>
             <Button
               title="Adicionar servico"
               variant="secondary"
@@ -364,7 +375,10 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Resumo financeiro</Text>
+          <Text style={styles.sectionTitle}>Investimento</Text>
+          <Text style={styles.sectionDescription}>
+            O desconto e o total final sao atualizados automaticamente.
+          </Text>
           <Input
             label="Desconto (%)"
             placeholder="0"
@@ -373,24 +387,12 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
             onChangeText={(value) => setDesconto(value.replace(/[^0-9,.\-]/g, ''))}
           />
 
-          <View style={styles.summaryCard}>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Subtotal</Text>
-              <Text style={styles.summaryValue}>{formatCurrency(subtotal)}</Text>
-            </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Desconto calculado</Text>
-              <Text style={styles.summaryValue}>
-                {formatCurrency(descontoCalculado)}
-              </Text>
-            </View>
-            <View style={[styles.summaryRow, styles.summaryRowHighlight]}>
-              <Text style={styles.summaryHighlightLabel}>Total final</Text>
-              <Text style={styles.summaryHighlightValue}>
-                {formatCurrency(totalFinal)}
-              </Text>
-            </View>
-          </View>
+          <SummaryBlock
+            title="Resumo financeiro"
+            subtotal={subtotal}
+            desconto={descontoCalculado}
+            total={totalFinal}
+          />
         </View>
 
         <View style={styles.footer}>
