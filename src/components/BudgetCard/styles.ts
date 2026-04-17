@@ -1,13 +1,4 @@
 import { StyleSheet } from 'react-native';
-import { StatusOrcamento } from '@/types/StatusOrcamento';
-
-// Cor do texto de cada status.
-export const statusStyles: Record<StatusOrcamento, object> = {
-  Rascunho: { color: '#666' },
-  Enviado: { color: '#003bb2' },
-  Aprovado: { color: '#00b300' },
-  Recusado: { color: 'rgb(183, 1, 1)' },
-};
 
 export const styles = StyleSheet.create({
   // Caixa principal do card.
@@ -44,28 +35,47 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#1d2747',
+    flex: 1,
+    paddingRight: 12,
   },
   // Nome do cliente.
   company: {
     fontSize: 14,
-    color: '#666',
+    color: '#5b6478',
     marginTop: 4,
-  },
-  // Texto do status.
-  status: {
-    fontSize: 12,
-    fontWeight: '600',
   },
   // Valor total do card.
   value: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: '700',
     marginTop: 8,
+    color: '#163db5',
+  },
+  // Acoes secundarias como editar e duplicar.
+  secondaryActionsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 14,
+  },
+  secondaryActionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#eef2ff',
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  secondaryActionText: {
+    color: '#2c46b1',
+    fontSize: 13,
+    fontWeight: '600',
   },
   // Linha das acoes de status.
   actionsRow: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexWrap: 'wrap',
     gap: 8,
     marginTop: 12,
   },

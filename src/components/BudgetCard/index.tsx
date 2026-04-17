@@ -1,14 +1,16 @@
-import { TouchableOpacity, Text, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { styles, statusStyles } from './styles';
+import { StatusBadge } from '@/components/StatusBadge';
 import { Orcamento } from '@/types/ModeloOrcamento';
 import {
   STATUS_TRANSITIONS,
   StatusOrcamento,
 } from '@/types/StatusOrcamento';
+import { formatCurrency, calculateTotal } from '@/utils/orcamentos';
+import { styles } from './styles';
 
 const STATUS_ACTION_LABELS: Record<StatusOrcamento, string> = {
-  Rascunho: 'Rascunho',
+  Rascunho: 'Voltar a rascunho',
   Enviado: 'Enviar',
   Aprovado: 'Aprovar',
   Recusado: 'Recusar',
@@ -17,26 +19,26 @@ const STATUS_ACTION_LABELS: Record<StatusOrcamento, string> = {
 // Dados esperados pelo card.
 interface Props {
   orcamento: Orcamento;
-  onPress?: () => void;
+  onEdit?: () => void;
+  onDuplicate?: () => void;
   onRemove?: () => void;
   onUpdateStatus?: (newStatus: StatusOrcamento) => void;
 }
 
 export function BudgetCard({
   orcamento,
-  onPress,
+  onEdit,
+  onDuplicate,
   onRemove,
   onUpdateStatus,
 }: Props) {
   // Soma o valor total dos itens do orcamento.
-  const total = orcamento.itens
-    .reduce((s, i) => s + i.quantidade * i.precoUnitario, 0)
-    .toFixed(2);
+  const total = calculateTotal(orcamento.itens, orcamento.percentualDesconto);
   const availableStatusActions = STATUS_TRANSITIONS[orcamento.status];
 
-  // Card clicavel de um orcamento.
+  // Card com acoes do orcamento.
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
+    <View style={styles.card}>
       <TouchableOpacity
         style={styles.removeButton}
         onPress={onRemove}
@@ -47,12 +49,30 @@ export function BudgetCard({
 
       <View style={styles.row}>
         <Text style={styles.title}>{orcamento.titulo}</Text>
-        <Text style={[styles.status, statusStyles[orcamento.status]]}>
-          {orcamento.status}
-        </Text>
+        <StatusBadge status={orcamento.status} />
       </View>
       <Text style={styles.company}>{orcamento.cliente}</Text>
-      <Text style={styles.value}>R$ {total.replace('.', ',')}</Text>
+      <Text style={styles.value}>{formatCurrency(total)}</Text>
+
+      <View style={styles.secondaryActionsRow}>
+        <TouchableOpacity
+          style={styles.secondaryActionButton}
+          onPress={onEdit}
+          activeOpacity={0.8}
+        >
+          <Feather name="edit-2" size={14} color="#2c46b1" />
+          <Text style={styles.secondaryActionText}>Editar</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.secondaryActionButton}
+          onPress={onDuplicate}
+          activeOpacity={0.8}
+        >
+          <Feather name="copy" size={14} color="#2c46b1" />
+          <Text style={styles.secondaryActionText}>Duplicar</Text>
+        </TouchableOpacity>
+      </View>
 
       {availableStatusActions.length ? (
         <View style={styles.actionsRow}>
@@ -75,6 +95,6 @@ export function BudgetCard({
           ))}
         </View>
       ) : null}
-    </TouchableOpacity>
+    </View>
   );
 }

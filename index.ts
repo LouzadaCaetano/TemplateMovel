@@ -1,6 +1,6 @@
 import { registerRootComponent } from 'expo';
 
-import Home from './src/app/Home';
+import App from './src/app';
 
-// Define a tela inicial do app.
-registerRootComponent(Home);
+// Define a tela raiz do app.
+registerRootComponent(App);

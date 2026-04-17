@@ -1,18 +1,49 @@
-import { TouchableOpacity, TouchableOpacityProps, Text } from "react-native";
-import { styles } from "./styles";
+import { TouchableOpacity, TouchableOpacityProps, Text } from 'react-native';
+import { styles } from './styles';
 
 // Props aceitas pelo botao.
 type Props = TouchableOpacityProps & {
-    title?: string;
-    icon?: React.ReactNode;
-}
+  title?: string;
+  icon?: React.ReactNode;
+  variant?: 'primary' | 'secondary' | 'danger';
+  fullWidth?: boolean;
+};
 
-export function Button({ title, icon, ...rest }: Props) {
-    // Botao reutilizavel com texto ou icone.
-    return (
-        <TouchableOpacity style={styles.container} {...rest}>
-            {icon}
-            {title ? <Text style={styles.title}>{title}</Text> : null}
-        </TouchableOpacity>
-    );
+export function Button({
+  title,
+  icon,
+  variant = 'primary',
+  fullWidth = false,
+  style,
+  disabled,
+  ...rest
+}: Props) {
+  // Botao reutilizavel com variacoes simples.
+  return (
+    <TouchableOpacity
+      style={[
+        styles.container,
+        variant === 'secondary' && styles.secondaryContainer,
+        variant === 'danger' && styles.dangerContainer,
+        fullWidth && styles.fullWidth,
+        disabled && styles.disabledContainer,
+        style,
+      ]}
+      disabled={disabled}
+      {...rest}
+    >
+      {icon}
+      {title ? (
+        <Text
+          style={[
+            styles.title,
+            variant === 'secondary' && styles.secondaryTitle,
+            disabled && styles.disabledTitle,
+          ]}
+        >
+          {title}
+        </Text>
+      ) : null}
+    </TouchableOpacity>
+  );
 }
