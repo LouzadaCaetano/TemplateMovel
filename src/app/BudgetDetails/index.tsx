@@ -67,8 +67,8 @@ export default function BudgetDetails({
 
         if (!selectedOrcamento) {
           Alert.alert(
-            'Orcamento nao encontrado',
-            'Nao foi possivel carregar este orcamento.'
+            'Orçamento não encontrado',
+            'Não foi possível carregar este orçamento.'
           );
           onBack();
           return;
@@ -80,7 +80,7 @@ export default function BudgetDetails({
         console.error('Erro ao carregar detalhes:', error);
         Alert.alert(
           'Erro ao carregar',
-          'Nao foi possivel abrir os detalhes do orcamento.'
+          'Não foi possível abrir os detalhes do orçamento.'
         );
       } finally {
         setIsLoading(false);
@@ -131,15 +131,15 @@ export default function BudgetDetails({
 
       await addOrcamento(clone, allOrcamentos);
       Alert.alert(
-        'Orcamento duplicado',
-        'Uma copia foi criada com status Rascunho.'
+        'Orçamento duplicado',
+        'Uma cópia foi criada com status Rascunho.'
       );
       onRefresh();
     } catch (error) {
       console.error('Erro ao duplicar nos detalhes:', error);
       Alert.alert(
         'Erro ao duplicar',
-        'Nao foi possivel duplicar o orcamento.'
+        'Não foi possível duplicar o orçamento.'
       );
     }
   };
@@ -152,8 +152,8 @@ export default function BudgetDetails({
     try {
       await remove(orcamento.id, allOrcamentos);
       Alert.alert(
-        'Orcamento excluido',
-        'O orcamento foi removido com sucesso.'
+        'Orçamento excluído',
+        'O orçamento foi removido com sucesso.'
       );
       onRefresh();
       onBack();
@@ -161,7 +161,7 @@ export default function BudgetDetails({
       console.error('Erro ao excluir nos detalhes:', error);
       Alert.alert(
         'Erro ao excluir',
-        'Nao foi possivel remover o orcamento.'
+        'Não foi possível remover o orçamento.'
       );
     }
   };
@@ -172,7 +172,7 @@ export default function BudgetDetails({
     }
 
     const summary = [
-      `Orcamento: ${orcamento.titulo}`,
+      `Orçamento: ${orcamento.titulo}`,
       `Cliente: ${orcamento.cliente}`,
       `Status: ${orcamento.status}`,
       `Total: ${formatCurrency(financialData.total)}`,
@@ -185,8 +185,8 @@ export default function BudgetDetails({
     } catch (error) {
       console.error('Erro ao compartilhar:', error);
       Alert.alert(
-        'Compartilhamento indisponivel',
-        'Nao foi possivel compartilhar o orcamento neste momento.'
+        'Compartilhamento indisponível',
+        'Não foi possível compartilhar o orçamento neste momento.'
       );
     }
   };
@@ -212,13 +212,13 @@ export default function BudgetDetails({
       setAllOrcamentos(updatedOrcamentos);
       Alert.alert(
         'Status atualizado',
-        `O orcamento agora esta como ${pendingStatus}.`
+        `O orçamento agora está como ${pendingStatus}.`
       );
     } catch (error) {
       console.error('Erro ao atualizar status nos detalhes:', error);
       Alert.alert(
         'Erro ao atualizar',
-        'Nao foi possivel atualizar o status do orcamento.'
+        'Não foi possível atualizar o status do orçamento.'
       );
     } finally {
       setPendingStatus(null);
@@ -248,9 +248,9 @@ export default function BudgetDetails({
           </TouchableOpacity>
 
           <View style={styles.headerText}>
-            <Text style={styles.title}>Detalhes do orcamento</Text>
+            <Text style={styles.title}>Detalhes do orçamento</Text>
             <Text style={styles.subtitle}>
-              Visualize as informacoes principais e acione as proximas etapas.
+              Visualize as informações principais e acione as próximas etapas.
             </Text>
           </View>
 
@@ -282,7 +282,7 @@ export default function BudgetDetails({
               </Text>
             </View>
             <View style={styles.metaItem}>
-              <Text style={styles.metaLabel}>Servicos</Text>
+              <Text style={styles.metaLabel}>Serviços</Text>
               <Text style={styles.metaValue}>{orcamento.itens.length}</Text>
             </View>
             <View style={styles.metaItem}>
@@ -300,8 +300,8 @@ export default function BudgetDetails({
             <StatusBadge status={orcamento.status} />
             <Text style={styles.statusHint}>
               {STATUS_TRANSITIONS[orcamento.status].length
-                ? 'Escolha a proxima etapa do orcamento.'
-                : 'Este status nao possui transicoes disponiveis.'}
+                ? 'Escolha a próxima etapa do orçamento.'
+                : 'Este status não possui transições disponíveis.'}
             </Text>
           </View>
 
@@ -326,7 +326,7 @@ export default function BudgetDetails({
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Servicos incluidos</Text>
+          <Text style={styles.sectionTitle}>Serviços incluídos</Text>
           <View style={styles.servicesList}>
             {orcamento.itens.map((item) => (
               <View key={item.id} style={styles.serviceCard}>
@@ -369,7 +369,7 @@ export default function BudgetDetails({
         </View>
 
         <Button
-          title="Editar orcamento"
+          title="Editar orçamento"
           onPress={() => onEdit(orcamento.id)}
           fullWidth
         />
@@ -377,8 +377,8 @@ export default function BudgetDetails({
 
       <ConfirmationModal
         visible={showDeleteConfirmation}
-        title="Excluir orcamento"
-        message="Tem certeza que deseja excluir este orcamento?"
+        title="Excluir orçamento"
+        message="Tem certeza que deseja excluir este orçamento?"
         confirmLabel="Excluir"
         destructive
         onCancel={() => setShowDeleteConfirmation(false)}
@@ -393,7 +393,7 @@ export default function BudgetDetails({
         title="Alterar status"
         message={
           pendingStatus
-            ? `Deseja realmente mudar o orcamento para ${pendingStatus}?`
+            ? `Deseja realmente mudar o orçamento para ${pendingStatus}?`
             : ''
         }
         confirmLabel="Confirmar"

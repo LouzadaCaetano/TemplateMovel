@@ -33,7 +33,7 @@ export function ServiceItemRow({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Servico {index + 1}</Text>
+        <Text style={styles.title}>Serviço {index + 1}</Text>
         {canRemove ? (
           <Button
             icon={<Feather name="trash-2" size={16} color="#ffffff" />}
@@ -45,8 +45,8 @@ export function ServiceItemRow({
       </View>
 
       <Input
-        label="Descricao"
-        placeholder="Ex.: Manutencao preventiva"
+        label="Descrição"
+        placeholder="Ex.: Manutenção preventiva"
         value={item.descricao}
         onChangeText={(value) => onChange(item.id, 'descricao', value)}
       />
@@ -62,7 +62,7 @@ export function ServiceItemRow({
         </View>
         <View style={styles.field}>
           <Input
-            label="Preco unitario"
+            label="Preço unitário"
             keyboardType="decimal-pad"
             value={item.precoUnitario}
             onChangeText={(value) => onChange(item.id, 'precoUnitario', value)}

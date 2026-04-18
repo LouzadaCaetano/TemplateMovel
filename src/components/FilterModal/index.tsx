@@ -39,9 +39,9 @@ export function FilterModal({
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable style={styles.sheet} onPress={(event) => event.stopPropagation()}>
           <View style={styles.header}>
-            <Text style={styles.title}>Filtro e ordenacao</Text>
+            <Text style={styles.title}>Filtro e ordenação</Text>
             <Text style={styles.subtitle}>
-              Ajuste como os orcamentos aparecem na tela inicial.
+              Ajuste como os orçamentos aparecem na tela inicial.
             </Text>
           </View>
 
@@ -79,7 +79,7 @@ export function FilterModal({
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Ordenacao</Text>
+              <Text style={styles.sectionTitle}>Ordenação</Text>
               <View style={styles.optionsList}>
                 {ORDENACAO_OPTIONS.map((option) => {
                   const selected = selectedOrdenacao === option.value;

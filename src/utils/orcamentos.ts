@@ -70,7 +70,7 @@ export function duplicateOrcamento(
   return {
     ...orcamento,
     id: createUniqueId('orcamento', existingOrcamentoIds),
-    titulo: `${orcamento.titulo} (Copia)`,
+    titulo: `${orcamento.titulo} (Cópia)`,
     status: 'Rascunho' as const,
     itens: orcamento.itens.map((item) => ({
       ...item,
@@ -114,10 +114,6 @@ export function applyOrcamentoFilters(
           new Date(a.dataAtualizacao).getTime() -
           new Date(b.dataAtualizacao).getTime()
         );
-      case 'titulo':
-        return a.titulo.localeCompare(b.titulo, 'pt-BR');
-      case 'cliente':
-        return a.cliente.localeCompare(b.cliente, 'pt-BR');
       case 'maiorValor':
         return (
           calculateTotal(b.itens, b.percentualDesconto) -

@@ -80,10 +80,10 @@ export default function Home({
       const storedOrcamentos = await getAll();
       setTodosOrcamentos(storedOrcamentos);
     } catch (error) {
-      console.error('Erro ao carregar orcamentos:', error);
+      console.error('Erro ao carregar orçamentos:', error);
       Alert.alert(
         'Erro ao carregar',
-        'Nao foi possivel carregar os orcamentos salvos.'
+        'Não foi possível carregar os orçamentos salvos.'
       );
     } finally {
       setIsLoading(false);
@@ -118,8 +118,8 @@ export default function Home({
 
     if (!selectedOrcamento) {
       Alert.alert(
-        'Orcamento nao encontrado',
-        'Nao foi possivel duplicar este orcamento.'
+        'Orçamento não encontrado',
+        'Não foi possível duplicar este orçamento.'
       );
       return;
     }
@@ -138,27 +138,27 @@ export default function Home({
 
       setTodosOrcamentos(updatedOrcamentos);
       Alert.alert(
-        'Orcamento duplicado',
-        'Uma copia foi criada com status Rascunho.'
+        'Orçamento duplicado',
+        'Uma cópia foi criada com status Rascunho.'
       );
     } catch (error) {
-      console.error('Erro ao duplicar orcamento:', error);
+      console.error('Erro ao duplicar orçamento:', error);
       Alert.alert(
         'Erro ao duplicar',
-        'Nao foi possivel duplicar o orcamento.'
+        'Não foi possível duplicar o orçamento.'
       );
     }
   };
 
   const handleClear = () => {
     if (!todosOrcamentos.length) {
-      Alert.alert('Lista vazia', 'Nao ha orcamentos para remover.');
+      Alert.alert('Lista vazia', 'Não há orçamentos para remover.');
       return;
     }
 
     openConfirmation({
       title: 'Limpar lista',
-      message: 'Tem certeza que deseja remover todos os orcamentos?',
+      message: 'Tem certeza que deseja remover todos os orçamentos?',
       confirmLabel: 'Limpar',
       destructive: true,
       onConfirm: () => {
@@ -168,13 +168,13 @@ export default function Home({
             setTodosOrcamentos([]);
             Alert.alert(
               'Lista limpa',
-              'Todos os orcamentos foram removidos.'
+              'Todos os orçamentos foram removidos.'
             );
           } catch (error) {
-            console.error('Erro ao limpar orcamentos:', error);
+            console.error('Erro ao limpar orçamentos:', error);
             Alert.alert(
               'Erro ao limpar',
-              'Nao foi possivel limpar a lista de orcamentos.'
+              'Não foi possível limpar a lista de orçamentos.'
             );
           }
         })();
@@ -202,16 +202,12 @@ export default function Home({
   const filtrosResumo = [
     statusFiltro !== 'Todos' ? `Status: ${statusFiltro}` : null,
     ordenacao !== 'maisRecentes'
-      ? `Ordenacao: ${
+      ? `Ordenação: ${
           ordenacao === 'maisAntigos'
             ? 'Mais antigos'
             : ordenacao === 'maiorValor'
               ? 'Maior valor'
-              : ordenacao === 'menorValor'
-                ? 'Menor valor'
-                : ordenacao === 'titulo'
-                  ? 'Titulo'
-                  : 'Cliente'
+              : 'Menor valor'
         }`
       : null,
   ]
@@ -222,9 +218,9 @@ export default function Home({
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerText}>
-          <Text style={styles.title}>Orcamentos</Text>
+          <Text style={styles.title}>Orçamentos</Text>
           <Text style={styles.subtitle}>
-            {`${todosOrcamentos.length} orcamento(s) salvos para acompanhar clientes, status e investimento.`}
+            {`${todosOrcamentos.length} orçamento(s) salvos para acompanhar clientes, status e investimento.`}
           </Text>
         </View>
         <Button title="Novo" onPress={onCreate} />
@@ -234,7 +230,7 @@ export default function Home({
         <View style={styles.searchRow}>
           <View style={styles.searchField}>
             <Input
-              placeholder="Buscar por titulo ou cliente"
+              placeholder="Buscar por título ou cliente"
               value={busca}
               onChangeText={setBusca}
             />
@@ -249,7 +245,7 @@ export default function Home({
 
         <View style={styles.toolbarRow}>
           <View style={styles.toolbarInfo}>
-            <Text style={styles.toolbarTitle}>Lista de orcamentos</Text>
+            <Text style={styles.toolbarTitle}>Lista de orçamentos</Text>
             <Text style={styles.toolbarSubtitle}>
               {filtrosResumo || 'Sem filtros adicionais. Ordenando por mais recentes.'}
             </Text>
@@ -287,12 +283,12 @@ export default function Home({
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <Text style={styles.emptyTitle}>
-              {isLoading ? 'Carregando orcamentos...' : 'Nenhum orcamento encontrado'}
+              {isLoading ? 'Carregando orçamentos...' : 'Nenhum orçamento encontrado'}
             </Text>
             <Text style={styles.emptyText}>
               {isLoading
                 ? 'Aguarde enquanto carregamos seus dados.'
-                : 'Crie um novo orcamento ou ajuste os filtros para visualizar outros resultados.'}
+                : 'Crie um novo orçamento ou ajuste os filtros para visualizar outros resultados.'}
             </Text>
           </View>
         }

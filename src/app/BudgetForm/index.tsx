@@ -84,8 +84,8 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
 
           if (!selectedOrcamento) {
             Alert.alert(
-              'Orcamento nao encontrado',
-              'Nao foi possivel carregar o orcamento para edicao.'
+              'Orçamento não encontrado',
+              'Não foi possível carregar o orçamento para edição.'
             );
             onBack();
             return;
@@ -104,10 +104,10 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
           setItens([buildBlankItem(existingItemIds)]);
         }
       } catch (error) {
-        console.error('Erro ao carregar formulario:', error);
+        console.error('Erro ao carregar formulário:', error);
         Alert.alert(
           'Erro ao carregar',
-          'Nao foi possivel preparar o formulario do orcamento.'
+          'Não foi possível preparar o formulário do orçamento.'
         );
       } finally {
         setIsLoading(false);
@@ -199,16 +199,16 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
 
     if (!tituloTrimmed || !clienteTrimmed) {
       Alert.alert(
-        'Campos obrigatorios',
-        'Preencha o titulo e o cliente do orcamento.'
+        'Campos obrigatórios',
+        'Preencha o título e o cliente do orçamento.'
       );
       return;
     }
 
     if (!itensNormalizados.length) {
       Alert.alert(
-        'Adicione servicos',
-        'O orcamento precisa de pelo menos um servico.'
+        'Adicione serviços',
+        'O orçamento precisa de pelo menos um serviço.'
       );
       return;
     }
@@ -222,8 +222,8 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
 
     if (hasInvalidItem) {
       Alert.alert(
-        'Servicos incompletos',
-        'Preencha descricao, quantidade e preco unitario validos em todos os servicos.'
+        'Serviços incompletos',
+        'Preencha descrição, quantidade e preço unitário válidos em todos os serviços.'
       );
       return;
     }
@@ -254,17 +254,17 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
       }
 
       Alert.alert(
-        isEditing ? 'Orcamento atualizado' : 'Orcamento criado',
+        isEditing ? 'Orçamento atualizado' : 'Orçamento criado',
         isEditing
-          ? 'As alteracoes foram salvas com sucesso.'
-          : 'O novo orcamento foi salvo com sucesso.'
+          ? 'As alterações foram salvas com sucesso.'
+          : 'O novo orçamento foi salvo com sucesso.'
       );
       onSaved();
     } catch (error) {
-      console.error('Erro ao salvar orcamento:', error);
+      console.error('Erro ao salvar orçamento:', error);
       Alert.alert(
         'Erro ao salvar',
-        'Nao foi possivel salvar o orcamento.'
+        'Não foi possível salvar o orçamento.'
       );
     } finally {
       setIsSaving(false);
@@ -275,7 +275,7 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Carregando formulario...</Text>
+          <Text style={styles.loadingText}>Carregando formulário...</Text>
         </View>
       </SafeAreaView>
     );
@@ -293,22 +293,22 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
           </TouchableOpacity>
           <View style={styles.headerText}>
             <Text style={styles.title}>
-              {isEditing ? 'Editar orcamento' : 'Novo orcamento'}
+              {isEditing ? 'Editar orçamento' : 'Novo orçamento'}
             </Text>
             <Text style={styles.subtitle}>
-              Organize os dados principais, servicos e resumo financeiro.
+              Organize os dados principais, serviços e resumo financeiro.
             </Text>
           </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Informacoes gerais</Text>
+          <Text style={styles.sectionTitle}>Informações gerais</Text>
           <Text style={styles.sectionDescription}>
-            Defina os dados basicos para identificar este orcamento.
+            Defina os dados básicos para identificar este orçamento.
           </Text>
           <Input
-            label="Titulo"
-            placeholder="Ex.: Orcamento de manutencao"
+            label="Título"
+            placeholder="Ex.: Orçamento de manutenção"
             value={titulo}
             onChangeText={setTitulo}
           />
@@ -323,7 +323,7 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Status</Text>
           <Text style={styles.sectionDescription}>
-            Escolha como este orcamento deve aparecer na listagem.
+            Escolha como este orçamento deve aparecer na listagem.
           </Text>
           <View style={styles.statusList}>
             {STATUS_ORCAMENTO_OPTIONS.map((statusOption) => {
@@ -348,13 +348,13 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <View style={styles.sectionHeaderText}>
-              <Text style={styles.sectionTitle}>Servicos incluidos</Text>
+              <Text style={styles.sectionTitle}>Serviços incluídos</Text>
               <Text style={styles.sectionDescription}>
-                Adicione todos os itens que entram no orcamento.
+                Adicione todos os itens que entram no orçamento.
               </Text>
             </View>
             <Button
-              title="Adicionar servico"
+              title="Adicionar serviço"
               variant="secondary"
               onPress={handleAddItem}
             />
@@ -377,7 +377,7 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Investimento</Text>
           <Text style={styles.sectionDescription}>
-            O desconto e o total final sao atualizados automaticamente.
+            O desconto e o total final são atualizados automaticamente.
           </Text>
           <Input
             label="Desconto (%)"
@@ -403,7 +403,7 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
             style={styles.footerButton}
           />
           <Button
-            title={isEditing ? 'Salvar alteracoes' : 'Salvar orcamento'}
+            title={isEditing ? 'Salvar alterações' : 'Salvar orçamento'}
             onPress={() => void handleSave()}
             disabled={isSaving}
             style={styles.footerButton}
