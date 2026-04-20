@@ -23,16 +23,6 @@ export async function getById(id: string): Promise<Orcamento | null> {
   return orcamentos.find((item) => item.id === id) ?? null;
 }
 
-// Busca apenas os orcamentos do status informado.
-export async function getByStatus(
-  status: StatusOrcamento,
-  source?: Orcamento[]
-): Promise<Orcamento[]> {
-  const orcamentos = source ?? await getAll();
-
-  return orcamentos.filter((item) => item.status === status);
-}
-
 // Salva a lista completa de orcamentos.
 export async function saveAll(orcamentos: Orcamento[]): Promise<void> {
   await AsyncStorage.setItem(
@@ -94,6 +84,10 @@ export async function remove(
 ): Promise<Orcamento[]> {
   const orcamentos = source ?? await getAll();
   const updatedOrcamentos = orcamentos.filter((item) => item.id !== id);
+
+  if (updatedOrcamentos.length === orcamentos.length) {
+    throw new Error('ORCAMENTO_NOT_FOUND');
+  }
 
   await saveAll(updatedOrcamentos);
 

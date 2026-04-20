@@ -29,6 +29,7 @@ import {
   calculateTotal,
   createUniqueId,
   parseCurrencyValue,
+  parsePercentageValue,
 } from '@/utils/orcamentos';
 import { styles } from './styles';
 
@@ -147,7 +148,7 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
         if (field === 'precoUnitario') {
           return {
             ...item,
-            precoUnitario: value.replace(/[^0-9,.\-]/g, ''),
+            precoUnitario: value.replace(/[^0-9,.]/g, ''),
           };
         }
 
@@ -175,7 +176,7 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
       precoUnitario: parseCurrencyValue(item.precoUnitario),
     }))
   );
-  const percentualDesconto = Math.max(Number(desconto.replace(',', '.')) || 0, 0);
+  const percentualDesconto = parsePercentageValue(desconto);
   const descontoCalculado = calculateDiscountValue(subtotal, percentualDesconto);
   const totalFinal = calculateTotal(
     itens.map((item) => ({
@@ -384,7 +385,7 @@ export default function BudgetForm({ orcamentoId, onBack, onSaved }: Props) {
             placeholder="0"
             keyboardType="decimal-pad"
             value={desconto}
-            onChangeText={(value) => setDesconto(value.replace(/[^0-9,.\-]/g, ''))}
+            onChangeText={(value) => setDesconto(value.replace(/[^0-9,.]/g, ''))}
           />
 
           <SummaryBlock

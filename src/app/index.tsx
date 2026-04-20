@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Home from '@/app/Home';
 import BudgetDetails from '@/app/BudgetDetails';
 import BudgetForm from '@/app/BudgetForm';
@@ -11,15 +11,27 @@ type ScreenState =
 export default function App() {
   const [screen, setScreen] = useState<ScreenState>({ name: 'home' });
   const [reloadSignal, setReloadSignal] = useState(0);
+  const refreshHome = useCallback(() => {
+    setReloadSignal((currentValue) => currentValue + 1);
+  }, []);
+  const navigateHome = useCallback(() => {
+    setScreen({ name: 'home' });
+  }, []);
+  const openForm = useCallback((orcamentoId?: string | null) => {
+    setScreen({ name: 'form', orcamentoId });
+  }, []);
+  const openDetails = useCallback((orcamentoId: string) => {
+    setScreen({ name: 'details', orcamentoId });
+  }, []);
 
   if (screen.name === 'form') {
     return (
       <BudgetForm
         orcamentoId={screen.orcamentoId}
-        onBack={() => setScreen({ name: 'home' })}
+        onBack={navigateHome}
         onSaved={() => {
-          setReloadSignal((currentValue) => currentValue + 1);
-          setScreen({ name: 'home' });
+          refreshHome();
+          navigateHome();
         }}
       />
     );
@@ -29,9 +41,9 @@ export default function App() {
     return (
       <BudgetDetails
         orcamentoId={screen.orcamentoId}
-        onBack={() => setScreen({ name: 'home' })}
-        onEdit={(orcamentoId) => setScreen({ name: 'form', orcamentoId })}
-        onRefresh={() => setReloadSignal((currentValue) => currentValue + 1)}
+        onBack={navigateHome}
+        onEdit={openForm}
+        onRefresh={refreshHome}
       />
     );
   }
@@ -39,9 +51,9 @@ export default function App() {
   return (
     <Home
       reloadSignal={reloadSignal}
-      onCreate={() => setScreen({ name: 'form', orcamentoId: null })}
-      onEdit={(orcamentoId) => setScreen({ name: 'form', orcamentoId })}
-      onOpenDetails={(orcamentoId) => setScreen({ name: 'details', orcamentoId })}
+      onCreate={() => openForm(null)}
+      onEdit={openForm}
+      onOpenDetails={openDetails}
     />
   );
 }

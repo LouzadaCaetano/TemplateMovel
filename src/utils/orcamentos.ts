@@ -29,9 +29,24 @@ export function parseCurrencyValue(value: string) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+// Converte texto percentual e limita o desconto a uma faixa segura.
+export function parsePercentageValue(value: string, maxValue = 100) {
+  const normalized = value.replace(',', '.').trim();
+  const parsed = Number(normalized);
+
+  if (!Number.isFinite(parsed)) {
+    return 0;
+  }
+
+  return Math.min(Math.max(parsed, 0), maxValue);
+}
+
 // Formata numero para exibicao padrao em reais.
 export function formatCurrency(value: number) {
-  return `R$ ${value.toFixed(2).replace('.', ',')}`;
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value);
 }
 
 // Soma o valor bruto dos itens.
@@ -67,15 +82,23 @@ export function duplicateOrcamento(
   existingOrcamentoIds: Set<string>,
   existingItemIds: Set<string>
 ) {
+  const clonedOrcamentoId = createUniqueId('orcamento', existingOrcamentoIds);
+  const clonedItemIds = new Set(existingItemIds);
+
   return {
     ...orcamento,
-    id: createUniqueId('orcamento', existingOrcamentoIds),
+    id: clonedOrcamentoId,
     titulo: `${orcamento.titulo} (Cópia)`,
     status: 'Rascunho' as const,
-    itens: orcamento.itens.map((item) => ({
-      ...item,
-      id: createUniqueId('item', existingItemIds),
-    })),
+    itens: orcamento.itens.map((item) => {
+      const clonedItemId = createUniqueId('item', clonedItemIds);
+      clonedItemIds.add(clonedItemId);
+
+      return {
+        ...item,
+        id: clonedItemId,
+      };
+    }),
     dataCriacao: new Date().toISOString(),
     dataAtualizacao: new Date().toISOString(),
   };

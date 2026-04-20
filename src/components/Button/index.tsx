@@ -1,10 +1,11 @@
+import type { ReactNode } from 'react';
 import { TouchableOpacity, TouchableOpacityProps, Text } from 'react-native';
 import { styles } from './styles';
 
 // Props aceitas pelo botao.
 type Props = TouchableOpacityProps & {
   title?: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   variant?: 'primary' | 'secondary' | 'danger';
   fullWidth?: boolean;
 };

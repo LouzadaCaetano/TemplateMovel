@@ -15,7 +15,6 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { SummaryBlock } from '@/components/SummaryBlock';
 import {
   add as addOrcamento,
-  getById,
   getAll,
   remove,
   updateStatus,
@@ -60,10 +59,9 @@ export default function BudgetDetails({
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [selectedOrcamento, orcamentos] = await Promise.all([
-          getById(orcamentoId),
-          getAll(),
-        ]);
+        const orcamentos = await getAll();
+        const selectedOrcamento =
+          orcamentos.find((item) => item.id === orcamentoId) ?? null;
 
         if (!selectedOrcamento) {
           Alert.alert(
@@ -129,7 +127,9 @@ export default function BudgetDetails({
         existingItemIds
       );
 
-      await addOrcamento(clone, allOrcamentos);
+      const updatedOrcamentos = await addOrcamento(clone, allOrcamentos);
+
+      setAllOrcamentos(updatedOrcamentos);
       Alert.alert(
         'Orçamento duplicado',
         'Uma cópia foi criada com status Rascunho.'
